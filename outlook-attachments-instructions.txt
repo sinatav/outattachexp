@@ -1,0 +1,102 @@
+Outlook Attachment Downloader — Setup Instructions for Colleague
+================================================================
+
+THE SCRIPT
+----------
+File:  Download-OutlookAttachments.ps1
+Send this file to colleague. They save it on their Desktop.
+
+
+CRITICAL PRE-REQUISITE: Classic Outlook, NOT New Outlook
+--------------------------------------------------------
+This script ONLY works with CLASSIC Outlook for Windows.
+"New Outlook" (the rewritten one) does NOT expose the automation
+interface the script needs.
+
+How to tell which one is running:
+  - Look at the Outlook window title bar.
+  - "Inbox - email@... - Outlook"   -> Classic  (correct)
+  - just "Outlook" / "... - Mail"    -> New     (won't work)
+
+How to switch from New to Classic:
+  1. Open Outlook.
+  2. Top-right of the window: find the "New Outlook" toggle (slider).
+  3. Turn the toggle OFF.
+  4. Pick any reason for switching when prompted.
+  5. Classic Outlook opens. Sign in with fikacompany.com email if asked.
+  6. Wait until the inbox is fully visible.
+
+If the toggle is missing or greyed out, IT has locked the machine to
+New Outlook. In that case the script can't be used — we'd need a
+Microsoft Graph version instead. Tell me if that happens.
+
+
+HOW TO RUN
+----------
+1. Open Classic Outlook. Make sure inbox is visible. KEEP IT OPEN.
+
+2. Open PowerShell:
+   - Press Windows key, type "powershell".
+   - Click "Windows PowerShell" with a LEFT CLICK
+     (NOT "Run as administrator").
+   - Title bar should say "Windows PowerShell"
+     — NOT "Administrator: Windows PowerShell".
+
+3. In PowerShell, paste this and press Enter:
+
+     powershell -ExecutionPolicy Bypass -File "$HOME\Desktop\Download-OutlookAttachments.ps1"
+
+4. If Outlook pops "A program is trying to access Outlook":
+   - Tick "Allow access for 10 minutes"
+   - Click Allow
+
+5. Answer the prompts (see below).
+
+
+WHAT THE PROMPTS MEAN
+---------------------
+Folder              Mailbox folder. Default "Inbox" (just press Enter).
+                    Subfolders: "Inbox/Invoices" or "Inbox\Invoices".
+
+From date           Earliest received date. Format YYYY-MM-DD.
+                    Blank = no lower bound.
+
+To date             Latest received date. Format YYYY-MM-DD (inclusive).
+                    Blank = no upper bound.
+
+Sender filter       - Full email (contains "@") -> exact match.
+                    - Plain text                  -> substring match
+                                                     against sender's
+                                                     name OR address.
+                    Blank = any sender.
+
+File extensions     Comma-separated, no dots. e.g.  pdf,xlsx,docx
+                    Blank = all attachment types.
+
+Download dest.      Folder to save attachments into. Will be created
+                    if it doesn't exist. Default:
+                    C:\Users\<you>\Downloads\outlook-attachments
+
+Filename collisions are handled automatically — duplicates get
+" (1)", " (2)" suffixes. No overwrites.
+
+
+COMMON PROBLEMS WE ALREADY HIT
+------------------------------
+Problem:  COM error 0x80080005 (CO_E_SERVER_EXEC_FAILURE)
+Cause:    New Outlook is running, not Classic — OR Classic isn't open.
+Fix:      Switch to Classic via the toggle, leave it open, retry.
+
+Problem:  PowerShell says it won't run the script (execution policy).
+Fix:     The full command above includes "-ExecutionPolicy Bypass"
+         which sidesteps this. Make sure to use that exact command.
+
+Problem:  Outlook never opens a window after launch.
+Cause:    Classic was never set up on this machine — only New Outlook.
+Fix:      First-time setup: launch Classic from Start menu,
+          walk through any sign-in prompts.
+
+
+SCRIPT LOCATION (where I have it)
+---------------------------------
+/Users/sina/Projects/outlook-attachments/Download-OutlookAttachments.ps1
